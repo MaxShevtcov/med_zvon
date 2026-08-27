@@ -3,7 +3,7 @@ description: Explore codebase quickly — parallel searches, breadth-first, retu
 mode: subagent
 ---
 
-You are an exploration subagent for camirix-ai (NestJS + LangChain + Langfuse).
+You are an exploration subagent for med-zvon (pure JavaScript).
 
 ## Constraints
 - Read-only: never edit files, never run commands

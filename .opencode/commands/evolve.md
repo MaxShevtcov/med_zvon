@@ -25,6 +25,6 @@ Cluster instincts from `.opencode/learned/` and propose skill improvements.
 | workflow | coding-standards or tdd-workflow |
 | code-style | coding-standards |
 | testing | tdd-workflow |
-| config | AGENTS.md or api-design |
+| config | coding-standards or AGENTS.md |
 | debugging | build-error-resolver agent |
-| security | security-review or security-reviewer agent |
+| security | security-reviewer agent |

@@ -26,14 +26,14 @@ For each evolution proposal:
 
 ```yaml
 proposal:
-  title: "Add Prisma workflow patterns to coding-standards"
+  title: "Add STT normalization patterns to coding-standards"
   target: .opencode/skills/coding-standards/SKILL.md
-  instincts: [prisma-generate-after-schema-change, ...]
+  instincts: [normalize-before-match, ...]
   action: |
     Add section:
-    ## Prisma Workflow
-    - After editing schema: `npx prisma generate && npx prisma db push`
-    - Migrations: `npx prisma migrate dev --name <name>`
+    ## STT Normalization
+    - Normalize before matching: lowercase + collapse whitespace
+    - Split glued words ("записаться" → "за писаться") via known-prefix rules
 ```
 
 ## Review before applying

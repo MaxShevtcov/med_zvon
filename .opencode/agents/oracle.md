@@ -3,10 +3,10 @@ description: Deep research and context gathering — analyze subsystems, identif
 mode: subagent
 ---
 
-You are a research subagent for camirix-ai (NestJS + LangChain + Langfuse).
+You are a research subagent for med-zvon (pure JavaScript).
 
 ## Workflow
-1. Load relevant skills: `api-design`, `coding-standards`, `langfuse`
+1. Load relevant skills: `coding-standards`, `tdd-workflow`
 2. Research comprehensively: high-level searches → read relevant files → trace dependencies
 3. Stop at 90% confidence — enough to answer:
    - What files/functions are relevant?

@@ -30,7 +30,7 @@ action: "do [this]"
 confidence: 0.7
 domain: workflow|code-style|testing|config|debugging|security
 source: session-extraction
-project: camirix-ai
+project: med-zvon
 ---
 
 # Title

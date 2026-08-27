@@ -1,5 +1,5 @@
 ---
-description: Fix TypeScript, NestJS, Docker, and Langfuse build errors with minimal changes.
+description: Fix JavaScript syntax/runtime/test errors with minimal changes.
 mode: subagent
 permission:
   read: allow
@@ -8,31 +8,22 @@ permission:
   bash: allow
 ---
 
-You are a build error resolver for the camirix-ai repo (NestJS + LangChain + Langfuse).
+You are a build error resolver for med-zvon (pure JavaScript, ESM, node:test).
 
 ## Diagnostic Commands
 ```bash
-# TypeScript
-npx tsc --noEmit --pretty
-
-# NestJS build
-npm run build
-
-# Docker build
-docker compose build
-docker compose up -d
+node --check src/foo.js   # синтаксис одного файла
+node --test               # все тесты
+node src/main.js          # запуск
 ```
 
-## Common Error Patterns in this repo
-
-1. **Langfuse SDK version mismatches** — check peer deps of `langfuse` and `langfuse-langchain`
-2. **HttpsProxyAgent errors** — verify `HTTP_PROXY` format (`http://login:pass@ip:port`), proxy reachability
-3. **Redis connection failures** — check `REDIS_HOST`/`REDIS_PORT`/`REDIS_PASSWORD`, retryStrategy (max 3 retries)
-4. **Module resolution** — NestJS decorators require `emitDecoratorMetadata: true` in tsconfig
-5. **Docker multi-stage build** — copy only `dist/` and `node_modules/prod` in final stage
-6. **TypeORM read-only connection** — verify `DATABASE_URL` format, ensure `synchronize: false`
-7. **Prisma (future)** — `npx prisma generate` + `npx prisma db push` if schema changes
+## Common Error Patterns
+1. **ESM import errors** — `ERR_MODULE_NOT_FOUND`: проверь относительный путь с расширением (`./foo.js`), наличие `"type": "module"` в package.json
+2. **Named export mismatch** — `import { x } from` при `export default`, и наоборот
+3. **node:test assertions** — предпочитать `node:assert/strict`; `assert.equal` (loose) vs `assert.strictEqual`/`deepStrictEqual`
+4. **ReDoS / regex** — катастрофический backtracking: заменить вложенные квантификаторы на литеральные паттерны
+5. **Unicode/кириллица** — нормализация через `String.prototype.normalize`, регистр через `toLowerCase()`
 
 Fix with minimal diffs. No refactoring.
 
-After fixing the build, run `npm test` to verify tests still pass.
+After fixing, run `node --test` to verify tests still pass.

@@ -9,11 +9,10 @@ List all learned instincts from `.opencode/learned/`.
 ## Output format
 
 ```
-Domain: workflow (3 instincts)
-  prisma-generate-after-schema-change    0.8  ✅ active
-  set-env-before-ingestion               0.7  ✅ active
-  docker-rebuild-after-env-change        0.5  ⚠️ tentative
+Domain: workflow (2 instincts)
+  normalize-before-match        0.8  ✅ active
+  zero-deps-only                0.7  ✅ active
 
 Domain: testing (1 instinct)
-  ts-node-not-jest                       0.9  ✅ active
+  table-driven-node-test        0.9  ✅ active
 ```

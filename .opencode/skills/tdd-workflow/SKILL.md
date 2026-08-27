@@ -1,9 +1,9 @@
 ---
 name: tdd-workflow
-description: Testing conventions for camirix-ai — Jest with ts-jest, NestJS testing utilities, TDD-first approach
+description: Testing conventions for med-zvon — node:test + node:assert, ESM, TDD-first
 ---
 
-## TDD-first approach (по умолчанию)
+## TDD-first (по умолчанию)
 
 **Правило:** если пользователь не сказал явно иначе, разработка ведётся через TDD.
 
@@ -14,49 +14,54 @@ description: Testing conventions for camirix-ai — Jest with ts-jest, NestJS te
 
 Исключения (когда TDD не применяется):
 - Пользователь явно сказал "без тестов" или "prototype/sketch"
-- Hotfix продакшена (срочный багфикс)
+- Hotfix (срочный багфикс)
 
-## TypeScript Backend Tests
+## Фреймворк
 
-Фреймворк: **Jest** (единственный, не Vitest, не ts-node).
+Встроенный **node:test** (единственный — без Jest, Vitest, ts-node).
 
 ```bash
-npm test              # Запуск тестов
-npm run test:watch    # Watch mode
-npm run test:cov      # С coverage
-npm run test:e2e      # E2E тесты
+node --test                 # все *.test.js в проекте
+node --test src/foo.test.js # конкретный файл
+node --test --watch         # watch mode
 ```
-- Jest с `ts-jest` трансформером
-- Тест-файлы: `*.spec.ts` рядом с тестируемым файлом
-- NestJS `@nestjs/testing` → `Test.createTestingModule()` для модульных тестов
 
-## Mocking
-- LangChain/OpenAI вызовы мокать через jest mock на уровне `LlmService`
-- Langfuse `CallbackHandler` мокать через пустой объект
-- Redis connections мокать через `ioredis-mock` или фабрику
-- Для тестов PostgreSQL использовать testcontainers или TypeORM SQLite fallback
+- `import test from 'node:test'` + `import assert from 'node:assert/strict'`
+- Файлы `*.test.js` рядом с исходником
+- Для сравнения объектов — `assert.deepStrictEqual`
 
 ## Структура теста
-```typescript
-describe('ModuleName', () => {
-  let service: ModuleNameService;
 
-  beforeAll(async () => {
-    const module = await Test.createTestingModule({
-      imports: [...],
-      providers: [...],
-    }).compile();
-    service = module.get(ModuleNameService);
-  });
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { classify } from './intent.js';
 
-  it('should ...', async () => {
-    const result = await service.someMethod(input);
-    expect(result).toEqual(expected);
-  });
+test('BOOK: чистый текст', () => {
+  assert.equal(classify('здравствуйте хочу записаться к терапевту'), 'BOOK');
 });
 ```
 
-## End-to-end
-- Поднимать NestJS приложение через `Test.createTestingModule` + `INestApplication`
-- Использовать `request` из `supertest` для HTTP тестов
-- E2E конфиг: `test/jest-e2e.json`
+## Табличные тесты
+
+Для набора примеров (как таблица из ТЗ) — табличный драйвер, один кейс = один тест:
+
+```js
+const cases = [
+  ['здравствуйте хочу записаться к терапевту на завтра', 'BOOK'],
+  ['мне нужно отменить запись на пятницу', 'CANCEL'],
+  ['хочу за писаться к врачу на вторник', 'BOOK'],
+  ['ыаыы ало алё', 'UNCLEAR'],
+];
+
+for (const [input, expected] of cases) {
+  test(`${expected} ← "${input}"`, () => {
+    assert.equal(classify(input), expected);
+  });
+}
+```
+
+## Mocking
+
+- Внешних вызовов нет (без LLM/API); при необходимости — моки `node:test` (`t.mock.method`)
+- Тесты детерминированные: без времени/сети в ядре классификации

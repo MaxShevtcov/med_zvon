@@ -42,7 +42,7 @@ action: run npx prisma generate && npx prisma db push --skip-generate
 confidence: 0.8
 domain: workflow
 source: session-observation
-project: pdf-ai-parser
+project: med-zvon
 ---
 
 # Prisma generate after schema change
@@ -91,7 +91,7 @@ action: "what the agent should do"
 confidence: 0.7  # 0.3-0.9
 domain: workflow|code-style|testing|config|debugging
 source: session-extraction
-project: pdf-ai-parser
+project: med-zvon
 ---
 
 # Human-readable title
