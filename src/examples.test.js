@@ -51,6 +51,11 @@ test('extended: COMPLAINT/OPERATOR synonyms', () => {
   assert.strictEqual(classify('хочу с человеком поговорить').intent, 'OPERATOR');
 });
 
+test('extended: stemmed inflected forms route to correct intent', () => {
+  assert.strictEqual(classify('запишете меня на прием').intent, 'BOOK');
+  assert.strictEqual(classify('перенесите запись на завтра').intent, 'RESCHEDULE');
+});
+
 
 test('extended: no false UNCLEAR on cases 1-9', () => {
   const nonUnclear = CASES.filter((c) => c.expected !== 'UNCLEAR');

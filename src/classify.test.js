@@ -66,3 +66,33 @@ test('classify: never throws on edge inputs', () => {
   assert.doesNotThrow(() => classify({ a: 1 }));
   assert.doesNotThrow(() => classify(Symbol('x')));
 });
+
+test('classify: stemmed inflected form запишете → BOOK', () => {
+  assert.strictEqual(classify('запишете меня').intent, 'BOOK');
+});
+
+test('classify: reflexive запишетесь → BOOK (stronger with stem)', () => {
+  assert.strictEqual(classify('хочу запишетесь к врачу').intent, 'BOOK');
+});
+
+test('classify: перенесите → RESCHEDULE via stem', () => {
+  assert.strictEqual(classify('перенесите запись на завтра').intent, 'RESCHEDULE');
+});
+
+test('classify: стем не ломает чистый BOOK (нет двойного счёта)', () => {
+  const r = classify('записаться к врачу');
+  assert.strictEqual(r.intent, 'BOOK');
+  assert.strictEqual(r.scores.BOOK, 5.0);
+});
+
+test('classify: стем не превращает слабую запись в BOOK', () => {
+  assert.strictEqual(classify('запись').intent, 'UNCLEAR');
+});
+
+test('classify: стем не ломает STT-разрыв за писаться (биграмма intact)', () => {
+  assert.strictEqual(classify('хочу за писаться к врачу на вторник').intent, 'BOOK');
+});
+
+test('classify: stem determinism', () => {
+  assert.deepStrictEqual(classify('перенесите запись на завтра'), classify('перенесите запись на завтра'));
+});

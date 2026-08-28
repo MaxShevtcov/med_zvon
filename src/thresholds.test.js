@@ -7,6 +7,7 @@ import {
   ambiguityGap,
   fallbackThreshold,
   minTokenLenForFuzzy,
+  minTokenLenForStem,
   strongBigramWeight,
   mediumUnigramWeight,
   weakUnigramWeight,
@@ -17,7 +18,7 @@ import {
 test('thresholds: all numeric constants are exported as numbers', () => {
   const numerics = [
     guardMinLength, maxInputLen, minConfidence, ambiguityGap,
-    fallbackThreshold, minTokenLenForFuzzy,
+    fallbackThreshold, minTokenLenForFuzzy, minTokenLenForStem,
     strongBigramWeight, mediumUnigramWeight,
     weakUnigramWeight, fuzzyMinPartial,
   ];
@@ -32,6 +33,7 @@ test('thresholds: ranges are valid', () => {
   assert.ok(ambiguityGap >= 0 && ambiguityGap <= 1);
   assert.ok(fallbackThreshold > 0);
   assert.ok(minTokenLenForFuzzy >= 1);
+  assert.ok(minTokenLenForStem >= 1);
   assert.ok(fuzzyMinPartial > 0);
 });
 
@@ -54,6 +56,7 @@ test('thresholds: THRESHOLDS contains all keys', () => {
     'mediumUnigramWeight',
     'minConfidence',
     'minTokenLenForFuzzy',
+    'minTokenLenForStem',
     'strongBigramWeight',
     'weakUnigramWeight',
   ]);

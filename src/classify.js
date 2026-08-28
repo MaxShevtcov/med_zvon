@@ -3,6 +3,7 @@ import { tokenize } from './tokenize.js';
 import { INTENTS } from './intents.js';
 import { score } from './score.js';
 import { fuzzy } from './fuzzy.js';
+import { buildStemIndex, stemMatch } from './stem.js';
 import {
   THRESHOLDS,
   minConfidence,
@@ -12,6 +13,7 @@ import {
 
 const DOMAIN_KEYS = ['BOOK', 'CANCEL', 'RESCHEDULE', 'INFO', 'OPERATOR', 'COMPLAINT'];
 const ALL_INTENTS = [...DOMAIN_KEYS, 'UNCLEAR'];
+const STEM_INDEX = buildStemIndex(INTENTS);
 
 export function classify(text) {
   let normalized = null;
@@ -38,6 +40,11 @@ export function classify(text) {
   }
 
   if (maxExact < fallbackThreshold) {
+    const st = stemMatch(tokens, INTENTS, STEM_INDEX, THRESHOLDS);
+    for (const k of DOMAIN_KEYS) {
+      scores[k] += st.scores[k];
+      matched[k] = matched[k].concat(st.matched[k]);
+    }
     const fz = fuzzy(tokens, INTENTS, THRESHOLDS);
     for (const k of DOMAIN_KEYS) {
       scores[k] += fz.scores[k];
