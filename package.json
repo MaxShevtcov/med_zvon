@@ -1,0 +1,9 @@
+{
+  "name": "med-zvon",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "try": "node scripts/try.js"
+  }
+}
