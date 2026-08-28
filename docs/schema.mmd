@@ -1,0 +1,15 @@
+```mermaid
+flowchart TD
+    IN[Сырой текст STT] --> G{Этап 1: Guard<br/>null / пусто / len &lt; guardMinLength?}
+    G -- да --> U1[UNCLEAR<br/>вернуть сразу]
+    G -- нет --> N[Этап 2: Normalize<br/>lowercase · убрать пунктуацию<br/>схлопнуть пробелы · ограничить длину]
+    N --> T[Этап 3: Tokenize<br/>униграммы + биграммы]
+    T --> S[Этап 4: Score точный<br/>сумма весов доменного словаря<br/>биграммы &gt; униграммы · 'запись' ≈ 0]
+    S --> FC{max сырой скор<br/>&lt; fallbackThreshold?}
+    FC -- да --> FZ[Этап 5: Fuzzy fallback<br/>Левенштейн против доменного словаря<br/>токены len ≥ minTokenLenForFuzzy<br/>частичный вес, никогда не решает один]
+    FZ --> R
+    FC -- нет --> R[Этап 6: Resolve<br/>доменное → UNCLEAR]
+    R --> D{доменное проходит<br/>minConfidence И ambiguityGap?}
+    D -- да --> OUT[Этап 7: Result<br/>intent: доменное · confidence · scores · matched]
+    D -- нет --> U2[UNCLEAR<br/>нести лучшую confidence + scores + matched]
+```
