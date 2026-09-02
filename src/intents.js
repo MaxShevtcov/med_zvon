@@ -17,7 +17,7 @@ export const INTENTS = {
       { token: 'запишите на', weight: strongBigramWeight },
       { token: 'запиши на', weight: strongBigramWeight },
     ],
-    referenceScore: 6.0,
+    referenceScore: 5.0,
   },
   CANCEL: {
     unigrams: [
@@ -63,7 +63,7 @@ export const INTENTS = {
       { token: 'стоит прием', weight: strongBigramWeight },
       { token: 'часы работы', weight: strongBigramWeight },
     ],
-    referenceScore: 6.0,
+    referenceScore: 5.0,
   },
   OPERATOR: {
     unigrams: [
@@ -77,6 +77,7 @@ export const INTENTS = {
       { token: 'поговорить с человеком', weight: strongBigramWeight },
       { token: 'с человеком', weight: strongBigramWeight },
       { token: 'живого человека', weight: strongBigramWeight },
+      { token: 'с роботом', weight: strongBigramWeight },
       { token: 'не с роботом', weight: strongBigramWeight },
     ],
     referenceScore: 6.0,

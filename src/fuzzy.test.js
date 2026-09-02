@@ -65,3 +65,25 @@ test('fuzzy: determinism', () => {
   const r2 = fuzzy(tokens, INTENTS, THRESHOLDS);
   assert.deepStrictEqual(r1, r2);
 });
+
+test('fuzzy: repeated input token contributes once', () => {
+  const once = fuzzy({ unigrams: ['операторр'], bigrams: [] }, INTENTS, THRESHOLDS);
+  const repeated = fuzzy({ unigrams: ['операторр', 'операторр'], bigrams: [] }, INTENTS, THRESHOLDS);
+  assert.deepStrictEqual(repeated, once);
+});
+
+test('fuzzy: keeps only the best candidate per token and intent', () => {
+  const result = fuzzy({ unigrams: ['отменять'], bigrams: [] }, INTENTS, THRESHOLDS);
+  assert.strictEqual(result.matched.CANCEL.length, 1);
+});
+
+test('fuzzy: skips tokens already matched exactly', () => {
+  const result = fuzzy(
+    { unigrams: ['запись'], bigrams: [] },
+    INTENTS,
+    THRESHOLDS,
+    { excludedTokens: new Set(['запись']) },
+  );
+  const total = Object.values(result.scores).reduce((sum, score) => sum + score, 0);
+  assert.strictEqual(total, 0);
+});

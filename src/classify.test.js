@@ -96,3 +96,19 @@ test('classify: стем не ломает STT-разрыв за писатьс�
 test('classify: stem determinism', () => {
   assert.deepStrictEqual(classify('перенесите запись на завтра'), classify('перенесите запись на завтра'));
 });
+
+test('classify: negated cancellation is suppressed', () => {
+  assert.strictEqual(classify('не хочу отменять запись').intent, 'UNCLEAR');
+});
+
+test('classify: negated complaint is suppressed', () => {
+  assert.strictEqual(classify('я не жалуюсь').intent, 'UNCLEAR');
+});
+
+test('classify: contrast keeps the affirmed action', () => {
+  assert.strictEqual(classify('не отменить а перенести запись').intent, 'RESCHEDULE');
+});
+
+test('classify: not a robot remains an operator request', () => {
+  assert.strictEqual(classify('хочу говорить не с роботом').intent, 'OPERATOR');
+});

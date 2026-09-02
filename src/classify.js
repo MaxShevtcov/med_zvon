@@ -4,6 +4,7 @@ import { INTENTS } from './intents.js';
 import { score } from './score.js';
 import { fuzzy } from './fuzzy.js';
 import { buildStemIndex, stemMatch } from './stem.js';
+import { negatedTokenIndexes } from './negation.js';
 import {
   THRESHOLDS,
   minConfidence,
@@ -27,7 +28,7 @@ export function classify(text) {
     return fallbackResult('UNCLEAR', 0);
   }
 
-  const tokens = tokenize(normalized);
+  const tokens = withoutNegatedTokens(tokenize(normalized));
 
   const exact = score(tokens, INTENTS);
   const scores = { ...exact.scores };
@@ -45,7 +46,9 @@ export function classify(text) {
       scores[k] += st.scores[k];
       matched[k] = matched[k].concat(st.matched[k]);
     }
-    const fz = fuzzy(tokens, INTENTS, THRESHOLDS);
+    const fz = fuzzy(tokens, INTENTS, THRESHOLDS, {
+      excludedTokens: fuzzyExcludedTokens(tokens),
+    });
     for (const k of DOMAIN_KEYS) {
       scores[k] += fz.scores[k];
       matched[k] = matched[k].concat(fz.matched[k]);
@@ -54,6 +57,31 @@ export function classify(text) {
 
   const { intent, confidence } = resolve(scores);
   return { intent, confidence, scores, matched };
+}
+
+function withoutNegatedTokens(tokens) {
+  const negated = negatedTokenIndexes(tokens.unigrams);
+  if (negated.size === 0) return tokens;
+
+  return tokenize(tokens.unigrams.filter((_, index) => !negated.has(index)).join(' '));
+}
+
+function fuzzyExcludedTokens(tokens) {
+  const excluded = new Set();
+
+  for (const token of tokens.unigrams) {
+    if (hasExactMatch(token)) excluded.add(token);
+  }
+
+  return excluded;
+}
+
+function hasExactMatch(token) {
+  for (const intent of Object.values(INTENTS)) {
+    if (intent.unigrams.some((entry) => entry.token === token)) return true;
+  }
+
+  return false;
 }
 
 export function resolve(scores) {

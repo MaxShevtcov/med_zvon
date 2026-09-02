@@ -4,12 +4,14 @@ flowchart TD
     G -- да --> U1[UNCLEAR<br/>вернуть сразу]
     G -- нет --> N[Этап 2: Normalize<br/>lowercase · убрать пунктуацию<br/>схлопнуть пробелы · ограничить длину]
     N --> T[Этап 3: Tokenize<br/>униграммы + биграммы]
-    T --> S[Этап 4: Score точный<br/>сумма весов доменного словаря<br/>биграммы &gt; униграммы · 'запись' ≈ 0]
+    T --> NG[Этап 4: Negation<br/>подавить признаки после «не»<br/>до «а» / «но»]
+    NG --> S[Этап 5: Score точный<br/>сумма весов доменного словаря<br/>биграммы &gt; униграммы · 'запись' ≈ 0]
     S --> FC{max сырой скор<br/>&lt; fallbackThreshold?}
-    FC -- да --> FZ[Этап 5: Fuzzy fallback<br/>Левенштейн против доменного словаря<br/>токены len ≥ minTokenLenForFuzzy<br/>частичный вес, никогда не решает один]
+    FC -- да --> ST[Этап 6: Stem fallback<br/>морфологические формы<br/>без двойного счёта exact]
+    ST --> FZ[Этап 7: Fuzzy fallback<br/>Левенштейн против доменного словаря<br/>один лучший кандидат на токен и намерение]
     FZ --> R
-    FC -- нет --> R[Этап 6: Resolve<br/>доменное → UNCLEAR]
+    FC -- нет --> R[Этап 8: Resolve<br/>доменное → UNCLEAR]
     R --> D{доменное проходит<br/>minConfidence И ambiguityGap?}
-    D -- да --> OUT[Этап 7: Result<br/>intent: доменное · confidence · scores · matched]
-    D -- нет --> U2[UNCLEAR<br/>нести лучшую confidence + scores + matched]
+    D -- да --> OUT[Этап 9: Result<br/>BOOK / CANCEL / RESCHEDULE / INFO / OPERATOR / COMPLAINT<br/>confidence · scores · matched]
+    D -- нет --> U2[UNCLEAR<br/>вернуть лучшую confidence + scores + matched]
 ```

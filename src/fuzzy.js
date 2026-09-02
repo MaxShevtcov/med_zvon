@@ -1,5 +1,3 @@
-import { INTENTS } from './intents.js';
-
 const DOMAIN_KEYS = ['BOOK', 'CANCEL', 'RESCHEDULE', 'INFO', 'OPERATOR', 'COMPLAINT'];
 
 export function levenshtein(a, b) {
@@ -31,8 +29,9 @@ class FuzzyConfig {
   }
 }
 
-export function fuzzy(tokens, intents, thresholds) {
+export function fuzzy(tokens, intents, thresholds, options = {}) {
   const cfg = new FuzzyConfig(thresholds.fuzzyMinPartial, thresholds.minTokenLenForFuzzy);
+  const excludedTokens = options.excludedTokens ?? new Set();
 
   const scores = {};
   const matched = {};
@@ -49,18 +48,27 @@ export function fuzzy(tokens, intents, thresholds) {
     }
   }
 
-  for (const tok of tokens.unigrams) {
-    if (tok.length < cfg.minTokenLenForFuzzy) continue;
+  for (const tok of new Set(tokens.unigrams)) {
+    if (tok.length < cfg.minTokenLenForFuzzy || excludedTokens.has(tok)) continue;
+    const bestByIntent = new Map();
+
     for (const entry of flat) {
       const distance = levenshtein(tok, entry.token);
       if (distance === 0) continue;
-      const partialWeight = (1 - distance / tok.length) * entry.weight;
+      const partialWeight = (1 - distance / Math.max(tok.length, entry.token.length)) * entry.weight;
       if (partialWeight >= cfg.fuzzyMinPartial) {
-        scores[entry.intent] += partialWeight;
-        matched[entry.intent].push(
-          `${tok}≈${entry.token} (+${partialWeight.toFixed(2)})`,
-        );
+        const current = bestByIntent.get(entry.intent);
+        if (!current || partialWeight > current.partialWeight) {
+          bestByIntent.set(entry.intent, { token: entry.token, partialWeight });
+        }
       }
+    }
+
+    for (const [intent, match] of bestByIntent) {
+      scores[intent] += match.partialWeight;
+      matched[intent].push(
+        `${tok}≈${match.token} (+${match.partialWeight.toFixed(2)})`,
+      );
     }
   }
 

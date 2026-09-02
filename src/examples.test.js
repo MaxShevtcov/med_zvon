@@ -13,6 +13,7 @@ const CASES = [
   { input: 'хочу с человеком поговорить а не с роботом', expected: 'OPERATOR' },
   { input: 'принести запись на среду вместо четверга', expected: 'RESCHEDULE' },
   { input: 'ыаыы ало алё', expected: 'UNCLEAR' },
+  { input: 'спасибо до свидания', expected: 'UNCLEAR' },
 ];
 
 for (const [i, c] of CASES.entries()) {
@@ -29,7 +30,7 @@ test('extended: greeting marker does not override domain', () => {
   assert.strictEqual(classify('здравствуйте хочу записаться').intent, 'BOOK');
 });
 
-test('extended: pure conversational phrases are UNCLEAR (no conversational layer)', () => {
+test('extended: pure conversational phrases are UNCLEAR', () => {
   assert.strictEqual(classify('здравствуйте').intent, 'UNCLEAR');
   assert.strictEqual(classify('до свидания').intent, 'UNCLEAR');
   assert.strictEqual(classify('спасибо большое').intent, 'UNCLEAR');
@@ -75,4 +76,3 @@ test('extended: determinism — double run gives identical results', () => {
     assert.deepStrictEqual(r1, r2, c.input);
   }
 });
-
